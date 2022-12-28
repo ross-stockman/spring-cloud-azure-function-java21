@@ -1,5 +1,3 @@
-> Trying to get a function to work with java 17. https://learn.microsoft.com/en-us/azure/azure-functions/functions-reference-java?tabs=bash%2Cconsumption#java-versions. I used a similar project I created for java 11 as a base template. It's not quite working yet, still work in progress.
-
 # spring-cloud-azure-function-java17
 
 This is a demo project to show how to create simple serverless functions using `java.util.function` classes and run them locally as both spring cloud functions and as azure functions.

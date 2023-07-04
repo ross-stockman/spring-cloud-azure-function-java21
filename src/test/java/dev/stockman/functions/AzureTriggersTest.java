@@ -1,76 +1,72 @@
 package dev.stockman.functions;
 
-import com.microsoft.azure.functions.ExecutionContext;
+import com.microsoft.azure.functions.HttpRequestMessage;
+import com.microsoft.azure.functions.HttpResponseMessage;
+import com.microsoft.azure.functions.HttpStatus;
+import dev.stockman.functions.mock.MockHttpResponseMessage;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
-import org.springframework.cloud.function.adapter.azure.FunctionInvoker;
+import org.mockito.Mockito;
+import org.mockito.stubbing.Answer;
 
-import java.util.logging.Logger;
-
-import static org.assertj.core.api.Assertions.assertThat;
-
+import java.util.Optional;
 
 class AzureTriggersTest {
 
-    private static final Logger LOGGER = Logger.getLogger(AzureTriggersTest.class.getName());
-
-    private final FunctionInvoker<String, String> systemUnderTest = new FunctionInvoker<>(MainApplication.class);
+    private AzureTriggers systemUnderTest = new AzureTriggers(
+            (a) -> a,
+            () -> "a",
+            (a) -> {}
+    );
 
     @Test
     void hello() {
-        String result = systemUnderTest.handleRequest("Kilroy", new ExecutionContext() {
-            @Override
-            public Logger getLogger() {
-                return LOGGER;
-            }
-            @Override
-            public String getInvocationId() {
-                return "id1";
-            }
-            @Override
-            public String getFunctionName() {
-                return "hello";
-            }
-        });
-        systemUnderTest.close();
-        assertThat(result).isEqualTo("Kilroy was here!");
+        @SuppressWarnings("unchecked")
+        final HttpRequestMessage<String> mockRequest = Mockito.mock(HttpRequestMessage.class);
+
+        final String body = "hello";
+        Mockito.doReturn(body).when(mockRequest).getBody();
+
+        Mockito.doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
+            HttpStatus status = (HttpStatus) invocation.getArguments()[0];
+            return new MockHttpResponseMessage.MockHttpResponseMessageBuilder().status(status);
+        }).when(mockRequest).createResponseBuilder(Mockito.any(HttpStatus.class));
+
+        HttpResponseMessage result = systemUnderTest.hello(mockRequest);
+        Assertions.assertEquals("hello", result.getBody());
+        Assertions.assertEquals(200, result.getStatusCode());
     }
 
     @Test
     void time() {
-        String result = systemUnderTest.handleRequest(new ExecutionContext() {
-            @Override
-            public Logger getLogger() {
-                return LOGGER;
-            }
-            @Override
-            public String getInvocationId() {
-                return "id1";
-            }
-            @Override
-            public String getFunctionName() {
-                return "time";
-            }
-        });
-        systemUnderTest.close();
-        assertThat(result).isEqualTo("The time is very late!");
+        @SuppressWarnings("unchecked")
+        final HttpRequestMessage<String> mockRequest = Mockito.mock(HttpRequestMessage.class);
+
+        Mockito.doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
+            HttpStatus status = (HttpStatus) invocation.getArguments()[0];
+            return new MockHttpResponseMessage.MockHttpResponseMessageBuilder().status(status);
+        }).when(mockRequest).createResponseBuilder(Mockito.any(HttpStatus.class));
+
+        HttpResponseMessage result = systemUnderTest.time(mockRequest);
+        Assertions.assertEquals("a", result.getBody());
+        Assertions.assertEquals(200, result.getStatusCode());
     }
 
     @Test
     void publish() {
-        systemUnderTest.handleRequest("Foobar", new ExecutionContext() {
-            @Override
-            public Logger getLogger() {
-                return LOGGER;
-            }
-            @Override
-            public String getInvocationId() {
-                return "id1";
-            }
-            @Override
-            public String getFunctionName() {
-                return "publish";
-            }
-        });
-        systemUnderTest.close();
+        @SuppressWarnings("unchecked")
+        final HttpRequestMessage<String> mockRequest = Mockito.mock(HttpRequestMessage.class);
+
+        final String body = "hello";
+        Mockito.doReturn(body).when(mockRequest).getBody();
+
+        Mockito.doAnswer((Answer<HttpResponseMessage.Builder>) invocation -> {
+            HttpStatus status = (HttpStatus) invocation.getArguments()[0];
+            return new MockHttpResponseMessage.MockHttpResponseMessageBuilder().status(status);
+        }).when(mockRequest).createResponseBuilder(Mockito.any(HttpStatus.class));
+
+        HttpResponseMessage result = systemUnderTest.publish(mockRequest);
+        Assertions.assertNull(result.getBody());
+        Assertions.assertEquals(202, result.getStatusCode());
     }
 }

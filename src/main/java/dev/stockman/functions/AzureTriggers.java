@@ -1,6 +1,5 @@
 package dev.stockman.functions;
 
-import com.microsoft.azure.functions.ExecutionContext;
 import com.microsoft.azure.functions.HttpMethod;
 import com.microsoft.azure.functions.HttpRequestMessage;
 import com.microsoft.azure.functions.HttpResponseMessage;
@@ -8,18 +7,32 @@ import com.microsoft.azure.functions.HttpStatus;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
-import org.springframework.cloud.function.adapter.azure.FunctionInvoker;
+import org.springframework.stereotype.Component;
 
-public class AzureTriggers extends FunctionInvoker<String, String> {
+import java.util.function.Consumer;
+import java.util.function.Function;
+import java.util.function.Supplier;
+
+@Component
+public class AzureTriggers {
+
+    private final Function<String, String> hello;
+    private final Supplier<String> time;
+    private final Consumer<String> publish;
+
+    public AzureTriggers(Function<String, String> hello, Supplier<String> time, Consumer<String> publish) {
+        this.hello = hello;
+        this.time = time;
+        this.publish = publish;
+    }
 
     @FunctionName("hello")
     public HttpResponseMessage hello(
             @HttpTrigger(name = "request", methods = {HttpMethod.POST}, authLevel = AuthorizationLevel.ANONYMOUS)
-            HttpRequestMessage<String> request,
-            final ExecutionContext context) {
+            HttpRequestMessage<String> request) {
 
         return request.createResponseBuilder(HttpStatus.OK)
-                .body(handleRequest(request.getBody(), context))
+                .body(hello.apply(request.getBody()))
                 .header("Content-Type", "application/json")
                 .build();
     }
@@ -27,11 +40,10 @@ public class AzureTriggers extends FunctionInvoker<String, String> {
     @FunctionName("time")
     public HttpResponseMessage time(
             @HttpTrigger(name = "request", methods = {HttpMethod.GET}, authLevel = AuthorizationLevel.ANONYMOUS)
-            HttpRequestMessage<String> request,
-            final ExecutionContext context) {
+            HttpRequestMessage<String> request) {
 
         return request.createResponseBuilder(HttpStatus.OK)
-                .body(handleRequest(context))
+                .body(time.get())
                 .header("Content-Type", "application/json")
                 .build();
     }
@@ -39,10 +51,9 @@ public class AzureTriggers extends FunctionInvoker<String, String> {
     @FunctionName("publish")
     public HttpResponseMessage publish(
             @HttpTrigger(name = "request", methods = {HttpMethod.POST}, authLevel = AuthorizationLevel.ANONYMOUS)
-            HttpRequestMessage<String> request,
-            final ExecutionContext context) {
+            HttpRequestMessage<String> request) {
 
-        handleRequest(request.getBody(), context);
+        publish.accept(request.getBody());
 
         return request.createResponseBuilder(HttpStatus.ACCEPTED).build();
     }

@@ -20,7 +20,7 @@
 
 		<azure.functions.maven.plugin.version>1.21.0</azure.functions.maven.plugin.version>
 		<azure.functions.java.library.version>2.1.0</azure.functions.java.library.version>
-		<spring.cloud.function.dependencies.version>4.0.0</spring.cloud.function.dependencies.version>
+		<spring.cloud.function.dependencies.version>4.0.3</spring.cloud.function.dependencies.version>
 		<spring-boot-thin-layout.version>1.0.28.RELEASE</spring-boot-thin-layout.version>
 
 		<functionAppName>app-spring-cloud-azure-function-java17</functionAppName>

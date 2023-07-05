@@ -1,15 +1,15 @@
-POST http://localhost:7071/api/hello
+POST https://app-spring-cloud-azure-function-java17.azurewebsites.net/api/hello
 Content-Type: text/plain
 
 Kilroy
 
 ###
 
-GET  http://localhost:7071/api/time
+GET  https://app-spring-cloud-azure-function-java17.azurewebsites.net/api/time
 
 ###
 
-POST http://localhost:7071/api/publish
+POST https://app-spring-cloud-azure-function-java17.azurewebsites.net/api/publish
 Content-Type: text/plain
 
 foobar

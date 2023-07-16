@@ -23,10 +23,11 @@
 		<spring.cloud.function.dependencies.version>4.0.3</spring.cloud.function.dependencies.version>
 		<spring-boot-thin-layout.version>1.0.28.RELEASE</spring-boot-thin-layout.version>
 
-		<functionAppName>app-spring-cloud-azure-function-java17</functionAppName>
-		<functionResourceGroup>MyResourceGroup</functionResourceGroup>
+		<appName>grayduck</appName>
+		<functionAppName>${appName}-app</functionAppName>
+		<functionResourceGroup>${appName}-group</functionResourceGroup>
 		<functionAppRegion>westus</functionAppRegion>
-		<functionAppServicePlanName>asp-spring-cloud-azure-function-java17</functionAppServicePlanName>
+		<functionAppServicePlanName>${appName}-asp</functionAppServicePlanName>
 		<functionPricingTier>CONSUMPTION</functionPricingTier>
 		<runtime.os>linux</runtime.os>
 		<stagingDirectory>${project.build.directory}/azure-functions/${functionAppName}</stagingDirectory>

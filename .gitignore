@@ -32,4 +32,4 @@ build/
 ### VS Code ###
 .vscode/
 
-local.settings.json
+src/main/azure/local.settings.json

@@ -1,15 +1,16 @@
-POST https://app-spring-cloud-azure-function-java17.azurewebsites.net/api/hello
+POST  https://grayduck-app.azurewebsites.net/api/hello
 Content-Type: text/plain
+Access-Control-Allow-Origin: *
 
 Kilroy
 
 ###
 
-GET  https://app-spring-cloud-azure-function-java17.azurewebsites.net/api/time
+GET  https://grayduck-app.azurewebsites.net/api/time
 
 ###
 
-POST https://app-spring-cloud-azure-function-java17.azurewebsites.net/api/publish
+POST https://grayduck-app.azurewebsites.net/api/publish
 Content-Type: text/plain
 
 foobar

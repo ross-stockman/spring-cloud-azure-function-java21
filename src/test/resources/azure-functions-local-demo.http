@@ -1,15 +1,37 @@
-POST http://localhost:7072/api/hello
-Content-Type: text/plain
+POST http://localhost:7072/api/post
+Content-Type: application/json
 
-Kilroy
+{
+  "message": "Post Message"
+}
 
 ###
 
-GET  http://localhost:7072/api/time
+GET  http://localhost:7072/api/last
+
+###
+
+GET  http://localhost:7072/api/recent
 
 ###
 
 POST http://localhost:7072/api/publish
-Content-Type: text/plain
+Content-Type: application/json
 
-foobar
+{
+  "message": "Publish Message"
+}
+
+###
+
+POST http://localhost:7072/api/post
+Content-Type: application/json
+
+{}
+
+###
+
+POST http://localhost:7072/api/publish
+Content-Type: application/json
+
+{}

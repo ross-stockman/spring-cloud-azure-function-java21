@@ -20,19 +20,4 @@ public class MainApplication {
 		SpringApplication.run(MainApplication.class, args);
 	}
 
-	@Bean
-	public Function<Message, Post> post(PostService postService) {
-		return postService::post;
-	}
-
-	@Bean
-	public Supplier<Post> last(PostService postService) {
-		return postService::last;
-	}
-
-	@Bean
-	public Consumer<Message> publish(PostService postService) {
-		return postService::post;
-	}
-
 }

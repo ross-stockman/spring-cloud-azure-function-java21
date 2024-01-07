@@ -24,6 +24,10 @@ Content-Type: application/json
 
 ###
 
+GET  https://grayduck-app.azurewebsites.net/api/reset
+
+###
+
 POST https://grayduck-app.azurewebsites.net/api/post
 Content-Type: application/json
 

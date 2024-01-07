@@ -1,10 +1,10 @@
 package dev.stockman.functions.posts;
 
-import java.time.Instant;
+import jakarta.validation.constraints.NotNull;
 
 public record Post(
-        Integer id,
-        String message,
-        String created
+        @NotNull Integer id,
+        @NotNull String message,
+        @NotNull String created
 ) {
 }

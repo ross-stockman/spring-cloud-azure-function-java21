@@ -20,6 +20,10 @@ Content-Type: application/json
 
 ###
 
+GET  http://localhost:8080/reset
+
+###
+
 POST http://localhost:8080/post
 Content-Type: application/json
 

@@ -16,11 +16,16 @@ public class ValidationService {
         this.validator = validator;
     }
 
-    public void validate(Object obj) {
-        var violationConstraints = validator.validate(obj);
+    public <T> void validate(T obj, LogicalValidator<T> logic) {
+        var violationConstraints = validator.validate(obj).stream().map(Violation::new).collect(Collectors.toSet());
+        violationConstraints.addAll(logic.apply(obj));
         if (!violationConstraints.isEmpty()) {
-            throw new ValidationException("Input is invalid!", violationConstraints.stream().map(Violation::new).collect(Collectors.toSet()));
+            throw new ValidationException("Input is invalid!", violationConstraints);
         }
+    }
+
+    public void validate(Object obj) {
+        validate(obj, (o) -> Set.of());
     }
 
 }

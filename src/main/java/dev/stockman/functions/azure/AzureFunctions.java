@@ -2,6 +2,7 @@ package dev.stockman.functions.azure;
 
 import com.microsoft.azure.functions.*;
 import com.microsoft.azure.functions.annotation.AuthorizationLevel;
+import com.microsoft.azure.functions.annotation.BindingName;
 import com.microsoft.azure.functions.annotation.FunctionName;
 import com.microsoft.azure.functions.annotation.HttpTrigger;
 import dev.stockman.functions.posts.Message;
@@ -13,18 +14,25 @@ import java.util.*;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.Supplier;
+import java.util.function.UnaryOperator;
 
 @Component
-public class Functions {
+public class AzureFunctions {
 
     private final Function<Message, Post> post;
-    private final Supplier<Post> last;
+    private final Supplier<List<Post>> all;
+    private final Function<Integer, Optional<Post>> get;
     private final Consumer<Message> publish;
+    private final Runnable reset;
+    private final UnaryOperator<Post> store;
 
-    public Functions(Function<Message, Post> post, Supplier<Post> last, Consumer<Message> publish) {
+    public AzureFunctions(Function<Message, Post> post, Supplier<List<Post>> all, Function<Integer, Optional<Post>> get, Consumer<Message> publish, Runnable reset, UnaryOperator<Post> store) {
         this.post = post;
-        this.last = last;
+        this.all = all;
+        this.get = get;
         this.publish = publish;
+        this.reset = reset;
+        this.store = store;
     }
 
     @FunctionName("post")
@@ -42,8 +50,8 @@ public class Functions {
         }
     }
 
-    @FunctionName("last")
-    public HttpResponseMessage last(
+    @FunctionName("all")
+    public HttpResponseMessage all(
             @HttpTrigger(
                     name = "request",
                     methods = {HttpMethod.GET},
@@ -51,28 +59,24 @@ public class Functions {
             )
             HttpRequestMessage<Void> request) {
         try {
-            return handleResponse(request, Optional.ofNullable(last.get()));
+            return handleResponse(request, all.get());
         } catch (Exception e) {
             return handleResponse(request, e);
         }
     }
 
-    @FunctionName("recent")
-    public HttpResponseMessage recent(
+    @FunctionName("get")
+    public HttpResponseMessage get(
             @HttpTrigger(
                     name = "request",
                     methods = {HttpMethod.GET},
-                    authLevel = AuthorizationLevel.ANONYMOUS
+                    authLevel = AuthorizationLevel.ANONYMOUS,
+                    route = "get/{id}"
             )
-            HttpRequestMessage<Void> request) {
+            HttpRequestMessage<Void> request,
+            @BindingName("id") Integer id) {
         try {
-            var items = last.get();
-            return handleResponse(request, Optional.of(
-                Objects.isNull(items)
-                    ? Collections.emptyList()
-                    : List.of(items)
-                )
-            );
+            return handleResponse(request, get.apply(id));
         } catch (Exception e) {
             return handleResponse(request, e);
         }
@@ -94,6 +98,38 @@ public class Functions {
         }
     }
 
+    @FunctionName("reset")
+    public HttpResponseMessage reset(
+            @HttpTrigger(
+                    name = "request",
+                    methods = {HttpMethod.GET},
+                    authLevel = AuthorizationLevel.ANONYMOUS
+            )
+            HttpRequestMessage<Void> request) {
+        try {
+            reset.run();
+            return handleResponse(request);
+        } catch (Exception e) {
+            return handleResponse(request, e);
+        }
+    }
+
+    @FunctionName("store")
+    public HttpResponseMessage store(
+            @HttpTrigger(
+                    name = "request",
+                    methods = {HttpMethod.PUT},
+                    authLevel = AuthorizationLevel.ANONYMOUS
+            )
+            HttpRequestMessage<PostRequest> request) {
+        try {
+            System.out.println(request.getBody());
+            return handleResponse(request, Optional.ofNullable(store.apply(request.getBody().toPost())));
+        } catch (Exception e) {
+            return handleResponse(request, e);
+        }
+    }
+
     record Response(
             Object data,
             Collection<?> items,
@@ -105,9 +141,17 @@ public class Functions {
         static Response items(Collection<?> items) {
             return new Response(null, items, null);
         }
-        static Response error(Object error) {
+        static Response errors(Object error) {
             return new Response(null, null, error);
         }
+    }
+
+    private HttpResponseMessage handleResponse(HttpRequestMessage<?> request, Collection<?> responseBody) {
+        return handleResponse(request, Optional.ofNullable(responseBody));
+    }
+
+    private HttpResponseMessage handleResponse(HttpRequestMessage<?> request, Object responseBody) {
+        return handleResponse(request, Optional.ofNullable(responseBody));
     }
 
     private HttpResponseMessage handleResponse(HttpRequestMessage<?> request, Optional<?> responseBody) {
@@ -134,7 +178,7 @@ public class Functions {
     private HttpResponseMessage handleResponse(HttpRequestMessage<?> request, Throwable throwable) {
         if (throwable instanceof ValidationException validationException) {
             return request.createResponseBuilder(HttpStatus.BAD_REQUEST)
-                    .body(Response.error(validationException.violations()))
+                    .body(Response.errors(validationException.violations()))
                     .header("Content-Type", "application/json")
                     .build();
         } else {
@@ -143,4 +187,44 @@ public class Functions {
         }
     }
 
+    public static class PostRequest {
+        private Integer id;
+        private String message;
+        private String created;
+
+        public PostRequest(){}
+
+        public PostRequest(Integer id, String message, String created) {
+            this.id = id;
+            this.message = message;
+            this.created = created;
+        }
+
+        public Integer getId() {
+            return id;
+        }
+
+        public void setId(Integer id) {
+            this.id = id;
+        }
+
+        public String getMessage() {
+            return message;
+        }
+
+        public void setMessage(String message) {
+            this.message = message;
+        }
+
+        public String getCreated() {
+            return created;
+        }
+
+        public void setCreated(String created) {
+            this.created = created;
+        }
+        public Post toPost() {
+            return new Post(this.id, this.message, this.created);
+        }
+    }
 }

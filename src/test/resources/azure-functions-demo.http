@@ -7,11 +7,11 @@ Content-Type: application/json
 
 ###
 
-GET  https://grayduck-app.azurewebsites.net/api/last
+GET  https://grayduck-app.azurewebsites.net/api/all
 
 ###
 
-GET  https://grayduck-app.azurewebsites.net/api/recent
+GET  https://grayduck-app.azurewebsites.net/api/get/1
 
 ###
 
@@ -28,6 +28,17 @@ GET  https://grayduck-app.azurewebsites.net/api/reset
 
 ###
 
+PUT https://grayduck-app.azurewebsites.net/api/store
+Content-Type: application/json
+
+{
+  "id": 5,
+  "message": "Post Message",
+  "created": "2024-01-06T00:00:00.000Z"
+}
+
+###
+
 POST https://grayduck-app.azurewebsites.net/api/post
 Content-Type: application/json
 
@@ -36,6 +47,13 @@ Content-Type: application/json
 ###
 
 POST https://grayduck-app.azurewebsites.net/api/publish
+Content-Type: application/json
+
+{}
+
+###
+
+PUT https://grayduck-app.azurewebsites.net/api/store
 Content-Type: application/json
 
 {}

@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.2.1</version>
+		<version>3.3.1</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>dev.stockman</groupId>
@@ -13,40 +13,32 @@
 	<version>1.0</version>
 	<name>spring-cloud-azure-function-java17</name>
 	<description>Example spring cloud serverless function to run on azure</description>
-
 	<properties>
-
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>17</java.version>
-
-		<azure.functions.maven.plugin.version>1.29.0</azure.functions.maven.plugin.version>
-		<spring.cloud.function.dependencies.version>4.1.0</spring.cloud.function.dependencies.version>
-		<spring-boot-thin-layout.version>1.0.28.RELEASE</spring-boot-thin-layout.version>
-
+		<java.version>21</java.version>
+		<start-class>dev.stockman.functions.MainApplication</start-class>
 		<appName>grayduck</appName>
 		<functionAppName>${appName}-app</functionAppName>
 		<functionResourceGroup>${appName}-group</functionResourceGroup>
 		<functionAppRegion>westus</functionAppRegion>
 		<functionAppServicePlanName>${appName}-asp</functionAppServicePlanName>
 		<functionPricingTier>CONSUMPTION</functionPricingTier>
+		<storageAccountName>${appName}storage</storageAccountName>
 		<runtime.os>linux</runtime.os>
 		<functionPort>7072</functionPort>
-<!--		<stagingDirectory>${project.build.directory}/azure-functions/${functionAppName}</stagingDirectory>-->
-		<start-class>dev.stockman.functions.MainApplication</start-class>
-
+		<functionExtensionVersion>~4</functionExtensionVersion>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-function-dependencies</artifactId>
-				<version>${spring.cloud.function.dependencies.version}</version>
+				<version>4.1.2</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
 		</dependencies>
 	</dependencyManagement>
-
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
@@ -88,40 +80,20 @@
 					<skip>true</skip>
 				</configuration>
 			</plugin>
-<!--			<plugin>-->
-<!--				<groupId>org.apache.maven.plugins</groupId>-->
-<!--				<artifactId>maven-dependency-plugin</artifactId>-->
-<!--				<executions>-->
-<!--					<execution>-->
-<!--						<id>copy-dependencies</id>-->
-<!--						<phase>prepare-package</phase>-->
-<!--						<goals>-->
-<!--							<goal>copy-dependencies</goal>-->
-<!--						</goals>-->
-<!--						<configuration>-->
-<!--							<outputDirectory>${stagingDirectory}/lib</outputDirectory>-->
-<!--							<overWriteReleases>false</overWriteReleases>-->
-<!--							<overWriteSnapshots>false</overWriteSnapshots>-->
-<!--							<overWriteIfNewer>true</overWriteIfNewer>-->
-<!--							<includeScope>runtime</includeScope>-->
-<!--							<excludeArtifactIds>azure-functions-java-library</excludeArtifactIds>-->
-<!--						</configuration>-->
-<!--					</execution>-->
-<!--				</executions>-->
-<!--			</plugin>-->
 			<plugin>
 				<groupId>com.microsoft.azure</groupId>
 				<artifactId>azure-functions-maven-plugin</artifactId>
-				<version>${azure.functions.maven.plugin.version}</version>
+				<version>1.35.0</version>
 				<configuration>
 					<appName>${functionAppName}</appName>
 					<resourceGroup>${functionResourceGroup}</resourceGroup>
 					<region>${functionAppRegion}</region>
 					<appServicePlanName>${functionAppServicePlanName}</appServicePlanName>
+					<storageAccountName>${storageAccountName}</storageAccountName>
 					<pricingTier>${functionPricingTier}</pricingTier>
 					<hostJson>${project.basedir}/src/main/azure/host.json</hostJson>
 					<localSettingsJson>${project.basedir}/src/main/azure/local.settings.json</localSettingsJson>
-					<funcPort>7072</funcPort>
+					<funcPort>${functionPort}</funcPort>
 					<runtime>
 						<os>${runtime.os}</os>
 						<javaVersion>${java.version}</javaVersion>
@@ -129,7 +101,7 @@
 					<appSettings>
 						<property>
 							<name>FUNCTIONS_EXTENSION_VERSION</name>
-							<value>~4</value>
+							<value>${functionExtensionVersion}</value>
 						</property>
 					</appSettings>
 				</configuration>
@@ -142,7 +114,6 @@
 					</execution>
 				</executions>
 			</plugin>
-
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
@@ -150,7 +121,7 @@
 					<dependency>
 						<groupId>org.springframework.boot.experimental</groupId>
 						<artifactId>spring-boot-thin-layout</artifactId>
-						<version>${spring-boot-thin-layout.version}</version>
+						<version>1.0.31.RELEASE</version>
 					</dependency>
 				</dependencies>
 			</plugin>

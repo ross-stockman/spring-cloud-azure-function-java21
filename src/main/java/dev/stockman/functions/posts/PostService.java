@@ -2,7 +2,6 @@ package dev.stockman.functions.posts;
 
 import dev.stockman.functions.validation.ValidationService;
 import dev.stockman.functions.validation.Violation;
-import jakarta.validation.Validator;
 import org.springframework.stereotype.Service;
 
 import java.time.Instant;

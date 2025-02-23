@@ -5,13 +5,13 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.1</version>
+		<version>3.3.9</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>dev.stockman</groupId>
-	<artifactId>spring-cloud-azure-function-java17</artifactId>
+	<artifactId>spring-cloud-azure-function-java21</artifactId>
 	<version>1.0</version>
-	<name>spring-cloud-azure-function-java17</name>
+	<name>spring-cloud-azure-function-java21</name>
 	<description>Example spring cloud serverless function to run on azure</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -83,7 +83,7 @@
 			<plugin>
 				<groupId>com.microsoft.azure</groupId>
 				<artifactId>azure-functions-maven-plugin</artifactId>
-				<version>1.35.0</version>
+				<version>1.37.0</version>
 				<configuration>
 					<appName>${functionAppName}</appName>
 					<resourceGroup>${functionResourceGroup}</resourceGroup>

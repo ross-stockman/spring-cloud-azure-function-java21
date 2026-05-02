@@ -5,7 +5,7 @@
 	<parent>
 		<groupId>org.springframework.boot</groupId>
 		<artifactId>spring-boot-starter-parent</artifactId>
-		<version>3.3.9</version>
+		<version>4.0.6</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
 	<groupId>dev.stockman</groupId>
@@ -15,51 +15,45 @@
 	<description>Example spring cloud serverless function to run on azure</description>
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<java.version>21</java.version>
+		<java.version>25</java.version>
 		<start-class>dev.stockman.functions.MainApplication</start-class>
 		<appName>grayduck</appName>
 		<functionAppName>${appName}-app</functionAppName>
 		<functionResourceGroup>${appName}-group</functionResourceGroup>
-		<functionAppRegion>westus</functionAppRegion>
+		<functionAppRegion>centralus</functionAppRegion>
 		<functionAppServicePlanName>${appName}-asp</functionAppServicePlanName>
-		<functionPricingTier>CONSUMPTION</functionPricingTier>
+		<functionPricingTier>Flex Consumption</functionPricingTier>
 		<storageAccountName>${appName}storage</storageAccountName>
 		<runtime.os>linux</runtime.os>
 		<functionPort>7072</functionPort>
 		<functionExtensionVersion>~4</functionExtensionVersion>
+		<azure-functions-maven-plugin.version>1.41.0</azure-functions-maven-plugin.version>
+		<azure-functions-java-library.version>3.3.0</azure-functions-java-library.version>
 	</properties>
 	<dependencyManagement>
 		<dependencies>
 			<dependency>
 				<groupId>org.springframework.cloud</groupId>
 				<artifactId>spring-cloud-function-dependencies</artifactId>
-				<version>4.1.2</version>
+				<version>5.0.1</version>
 				<type>pom</type>
 				<scope>import</scope>
 			</dependency>
+<!--			<dependency>-->
+<!--				<groupId>com.microsoft.azure.functions</groupId>-->
+<!--				<artifactId>azure-functions-java-library</artifactId>-->
+<!--				<version>${azure-functions-java-library.version}</version>-->
+<!--			</dependency>-->
 		</dependencies>
 	</dependencyManagement>
 	<dependencies>
-		<dependency>
-			<groupId>org.springframework.cloud</groupId>
-			<artifactId>spring-cloud-starter-function-web</artifactId>
-		</dependency>
 		<dependency>
 			<groupId>org.springframework.cloud</groupId>
 			<artifactId>spring-cloud-function-adapter-azure</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-logging</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
 			<artifactId>spring-boot-starter-validation</artifactId>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework.boot</groupId>
-			<artifactId>spring-boot-starter-test</artifactId>
-			<scope>test</scope>
 		</dependency>
 	</dependencies>
 	<build>
@@ -83,7 +77,7 @@
 			<plugin>
 				<groupId>com.microsoft.azure</groupId>
 				<artifactId>azure-functions-maven-plugin</artifactId>
-				<version>1.37.0</version>
+				<version>${azure-functions-maven-plugin.version}</version>
 				<configuration>
 					<appName>${functionAppName}</appName>
 					<resourceGroup>${functionResourceGroup}</resourceGroup>
@@ -103,6 +97,10 @@
 							<name>FUNCTIONS_EXTENSION_VERSION</name>
 							<value>${functionExtensionVersion}</value>
 						</property>
+						<property>
+							<name>MAIN_CLASS</name>
+							<value>${start-class}</value>
+						</property>
 					</appSettings>
 				</configuration>
 				<executions>
@@ -117,13 +115,6 @@
 			<plugin>
 				<groupId>org.springframework.boot</groupId>
 				<artifactId>spring-boot-maven-plugin</artifactId>
-				<dependencies>
-					<dependency>
-						<groupId>org.springframework.boot.experimental</groupId>
-						<artifactId>spring-boot-thin-layout</artifactId>
-						<version>1.0.31.RELEASE</version>
-					</dependency>
-				</dependencies>
 			</plugin>
 		</plugins>
 	</build>

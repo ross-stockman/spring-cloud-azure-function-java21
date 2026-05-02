@@ -15,6 +15,7 @@ import java.util.function.UnaryOperator;
 
 @Configuration
 public class Functions {
+
     @Bean
     public Function<Message, Post> post(PostService postService) {
         return postService::post;
